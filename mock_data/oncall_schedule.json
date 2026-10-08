@@ -1,0 +1,5 @@
+[
+  {"team": "core-services-team", "member": "priya.k", "slack_id": "REPLACE_WITH_SLACK_USER_ID", "shift_start": "2026-09-24T06:00:00Z", "shift_end": "2026-09-24T14:00:00Z"},
+  {"team": "core-services-team", "member": "rahul.m", "slack_id": "REPLACE_WITH_SLACK_USER_ID", "shift_start": "2026-09-24T14:00:00Z", "shift_end": "2026-09-24T22:00:00Z"},
+  {"team": "platform-team", "member": "sara.t", "slack_id": "REPLACE_WITH_SLACK_USER_ID", "shift_start": "2026-09-24T06:00:00Z", "shift_end": "2026-09-24T22:00:00Z"}
+]

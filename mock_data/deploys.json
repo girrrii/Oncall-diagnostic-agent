@@ -1,0 +1,7 @@
+[
+  {"service": "checkout-service", "commit": "a3f9c21", "author": "priya.k", "timestamp": "2026-09-24T14:30:00Z", "message": "refactor payment retry logic"},
+  {"service": "checkout-service", "commit": "d81e4f0", "author": "rahul.m", "timestamp": "2026-09-24T09:15:00Z", "message": "add discount code validation"},
+  {"service": "auth-service", "commit": "b72c8a1", "author": "sara.t", "timestamp": "2026-09-24T08:00:00Z", "message": "update JWT expiry to 24h"},
+  {"service": "notification-service", "commit": "e91f3b2", "author": "priya.k", "timestamp": "2026-09-24T11:45:00Z", "message": "switch email provider to SES"},
+  {"service": "payment-service", "commit": "c44a9d7", "author": "rahul.m", "timestamp": "2026-09-23T18:20:00Z", "message": "bump SDK version for gateway"}
+]

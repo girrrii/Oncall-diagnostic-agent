@@ -1,0 +1,10 @@
+[
+  {
+    "service": "payment-service",
+    "incident_id": "INC-1042",
+    "status": "open",
+    "severity": "high",
+    "opened_at": "2026-09-23T18:45:00Z",
+    "summary": "Elevated latency on gateway calls, tracked to upstream SDK bump, awaiting rollback approval"
+  }
+]

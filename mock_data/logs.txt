@@ -1,0 +1,32 @@
+2026-09-24T14:29:50Z checkout-service INFO Health check OK
+2026-09-24T14:30:05Z checkout-service INFO Deploy completed: commit a3f9c21
+2026-09-24T14:32:01Z checkout-service ERROR PaymentRetryException: upstream timeout after 3 attempts
+2026-09-24T14:32:15Z checkout-service ERROR PaymentRetryException: upstream timeout after 3 attempts
+2026-09-24T14:33:40Z checkout-service ERROR NullPointerException in RetryHandler.process
+2026-09-24T14:35:02Z checkout-service ERROR PaymentRetryException: upstream timeout after 3 attempts
+2026-09-24T14:36:10Z checkout-service WARN High retry queue depth: 240
+2026-09-24T14:40:22Z checkout-service ERROR PaymentRetryException: upstream timeout after 3 attempts
+2026-09-24T09:15:10Z checkout-service INFO Deploy completed: commit d81e4f0
+2026-09-24T09:16:00Z checkout-service INFO Discount validation active
+2026-09-24T08:00:05Z auth-service INFO Deploy completed: commit b72c8a1
+2026-09-24T08:01:00Z auth-service INFO JWT expiry updated to 24h
+2026-09-24T10:14:50Z auth-service WARN Upstream identity provider slow response: 2100ms
+2026-09-24T10:15:05Z auth-service ERROR IdentityProviderTimeoutException
+2026-09-24T10:15:40Z auth-service ERROR IdentityProviderTimeoutException
+2026-09-24T10:16:12Z auth-service ERROR IdentityProviderTimeoutException
+2026-09-24T10:20:00Z auth-service WARN Circuit breaker OPEN for identity-provider
+2026-09-24T10:25:30Z auth-service INFO Circuit breaker HALF_OPEN, retrying
+2026-09-24T10:30:00Z auth-service INFO Circuit breaker CLOSED, recovered
+2026-09-23T18:20:05Z payment-service INFO Deploy completed: commit c44a9d7
+2026-09-23T18:39:00Z payment-service WARN Gateway SDK v2 response time degraded
+2026-09-23T18:40:15Z payment-service ERROR GatewayException: unexpected response schema
+2026-09-23T18:41:00Z payment-service ERROR GatewayException: unexpected response schema
+2026-09-23T18:45:20Z payment-service WARN Incident INC-1042 opened, tracking gateway SDK issue
+2026-09-24T09:00:00Z payment-service WARN Gateway SDK v2 response time degraded
+2026-09-24T12:00:00Z payment-service WARN Gateway SDK v2 response time degraded, INC-1042 still open
+2026-09-24T11:45:05Z notification-service INFO Deploy completed: commit e91f3b2
+2026-09-24T11:46:00Z notification-service INFO SES provider active, test email sent OK
+2026-09-24T12:00:00Z notification-service INFO Health check OK
+2026-09-24T13:00:00Z notification-service INFO Health check OK
+2026-09-24T13:30:00Z checkout-service INFO Health check OK
+2026-09-24T13:45:00Z auth-service INFO Health check OK

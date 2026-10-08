@@ -1,0 +1,6 @@
+{
+  "checkout-service": "core-services-team",
+  "payment-service": "core-services-team",
+  "auth-service": "platform-team",
+  "notification-service": "platform-team"
+}
