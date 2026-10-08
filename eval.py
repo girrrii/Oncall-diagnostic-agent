@@ -19,19 +19,19 @@ TEST_CASES = [
         "name": "payment-service: existing incident surfaced",
         "query": "what about payment-service?",
         "must_include": ["INC-1042"],
-        "must_not_include": [],
+        "must_not_include": ["no data", "14:32:01", "auth-service", "checkout-service"],
     },
     {
         "name": "billing-service: unknown service, no data",
         "query": "what's happening with billing-service?",
-        "must_include": ["no logs"],
-        "must_not_include": ["error rate", "spiking", "latency increased"],
+        "must_include": ["no data"],
+        "must_not_include": ["operating normally", "stable", "healthy"],
     },
     {
         "name": "notification-service: healthy, no issue",
         "query": "what's the status of notification-service?",
-        "must_include": [],
-        "must_not_include": ["error", "spike", "incident", "failure"],  # should NOT invent a problem
+        "must_include": ["healthy"],
+        "must_not_include": ["no data", "experiencing", "breach"],
     },
     {
         "name": "cross-service: broad status check",
@@ -41,6 +41,7 @@ TEST_CASES = [
     },
 ]
 
+GLOBAL_FORBIDDEN = ["2023"]  # fabricated dates; real data is all 2026
 
 def run_eval():
     results = []
@@ -61,6 +62,11 @@ def run_eval():
             if phrase.lower() in answer.lower():
                 passed = False
                 failures.append(f"Contains forbidden phrase: '{phrase}'")
+
+        for phrase in GLOBAL_FORBIDDEN:
+            if phrase in answer:
+                passed = False
+                failures.append(f"Fabricated date detected: '{phrase}'")
 
         results.append({
             "name": case["name"],

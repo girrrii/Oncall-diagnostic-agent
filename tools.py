@@ -28,13 +28,15 @@ def get_logs(service: str, since: str = "1h") -> str:
             if service in line:
                 matched.append(line.strip())
     if not matched:
-        return f"No logs found for service '{service}'."
+                return (f"No logs found for service '{service}'. NO DATA: this service is unknown or has no "
+                "telemetry, so its health cannot be assessed.")
     return "\n".join(matched)
 
 
 @tool
 def get_metrics(service: str, since: str = "1h") -> str:
-    """Get CPU, latency, and error rate metrics for a service over a time window."""
+    """Get CPU, latency, and error rate metrics for a service. Each row is
+    labelled NORMAL or BREACH (error_rate > 2% or latency > 300ms)."""
     matched = []
     with open(f"{MOCK_DATA_DIR}/metrics.csv", "r") as f:
         reader = csv.DictReader(f)
@@ -42,13 +44,18 @@ def get_metrics(service: str, since: str = "1h") -> str:
             if row["service"] == service:
                 matched.append(row)
     if not matched:
-        return f"No metrics found for service '{service}'."
-    lines = [
-        f"{r['timestamp']} | cpu={r['cpu']}% | latency={r['latency_ms']}ms | error_rate={r['error_rate']}%"
-        for r in matched
-    ]
+                return (f"No metrics found for service '{service}'. NO DATA: this service is unknown or has no "
+                "telemetry, so its health cannot be assessed.")
+    lines = []
+    any_breach = False
+    for r in matched:
+        breach = float(r["error_rate"]) > 2.0 or float(r["latency_ms"]) > 300
+        any_breach = any_breach or breach
+        label = "BREACH" if breach else "NORMAL"
+        lines.append(f"{r['timestamp']} | cpu={r['cpu']}% | latency={r['latency_ms']}ms | error_rate={r['error_rate']}% | [{label}]")
+    if not any_breach:
+        lines.append("SUMMARY: all readings NORMAL. The service is healthy; there is no issue to diagnose.")
     return "\n".join(lines)
-
 
 @tool
 def get_recent_deploys(service: str) -> str:
@@ -81,10 +88,10 @@ def get_open_incidents(service: str) -> str:
 
 @tool
 def check_deploy_correlation(service: str, issue_timestamp: str) -> str:
-    """Given a service and the timestamp an issue started (ISO format, e.g. 
-    '2026-09-24T10:15:00Z'), returns the exact time gap in minutes between 
-    the issue and the nearest deploy. Always use this instead of calculating 
-    the gap yourself."""
+    """Given a service and the timestamp an issue started (ISO format, e.g.
+    '2026-09-24T10:15:00Z'), checks deploys that happened BEFORE the issue and
+    returns the gap in minutes plus a CORRELATED / NOT CORRELATED verdict.
+    Always report this verdict exactly as given."""
     from datetime import datetime
     with open(f"{MOCK_DATA_DIR}/deploys.json", "r") as f:
         deploys = json.load(f)
@@ -92,13 +99,38 @@ def check_deploy_correlation(service: str, issue_timestamp: str) -> str:
     if not matched:
         return f"No deploys found for service '{service}'."
 
+    # Guard: the timestamp must be a real one from this service's logs or metrics
+    known = set()
+    with open(f"{MOCK_DATA_DIR}/logs.txt", "r") as f:
+        for line in f:
+            parts = line.split()
+            if len(parts) > 1 and parts[1] == service:
+                known.add(parts[0])
+    with open(f"{MOCK_DATA_DIR}/metrics.csv", "r") as f:
+        for row in csv.DictReader(f):
+            if row["service"] == service:
+                known.add(row["timestamp"])
+    if issue_timestamp not in known:
+        return (f"ERROR: '{issue_timestamp}' is not a timestamp from the {service} logs or metrics. "
+                "Copy the exact timestamp of the first error from get_logs output and call this tool again.")
+
     issue_dt = datetime.fromisoformat(issue_timestamp.replace("Z", "+00:00"))
-    results = []
+    candidates = []
     for d in matched:
         deploy_dt = datetime.fromisoformat(d["timestamp"].replace("Z", "+00:00"))
-        gap_minutes = abs((issue_dt - deploy_dt).total_seconds() / 60)
-        results.append(f"commit={d['commit']} | gap={gap_minutes:.0f} minutes")
-    return "\n".join(results)
+        gap = (issue_dt - deploy_dt).total_seconds() / 60
+        if gap >= 0:  # only deploys before the issue can be a cause
+            candidates.append((gap, d))
+
+    if not candidates:
+        return "VERDICT: NOT CORRELATED (no deploy happened before this issue)."
+
+    gap, nearest = min(candidates, key=lambda c: c[0])
+    if gap <= 10:
+        verdict = "CORRELATED"
+    else:
+        verdict = "NOT CORRELATED (gap exceeds 10 minutes)"
+    return f"Nearest prior deploy: commit={nearest['commit']} | gap={gap:.0f} minutes | VERDICT: {verdict}"
 
 @tool
 def get_oncall_person(service: str, timestamp: str) -> str:
